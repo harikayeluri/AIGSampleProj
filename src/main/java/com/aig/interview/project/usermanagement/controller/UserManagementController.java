@@ -58,6 +58,7 @@ public class UserManagementController {
 		
 		Optional<User> user=null;
 		try {
+			
 			 user= userManageService.getUserbyId(userId);	
 			if(!user.isPresent()) {
 			throw new ResponseStatusException(

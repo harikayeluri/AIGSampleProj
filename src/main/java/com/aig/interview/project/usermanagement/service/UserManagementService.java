@@ -31,7 +31,7 @@ public class UserManagementService {
 		
 	return userRepo.findById(userId);
 		
-		//return users.stream().filter(s->s.getUUID().equals(userId)).findFirst().get();
+		// return users.stream().filter(s->s.getUUID().equals(userId)).findFirst().get();
 	}
 
 	public Page<User> getUsers(Pageable pageable) throws SQLException {
