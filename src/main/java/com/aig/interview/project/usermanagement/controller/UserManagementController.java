@@ -55,18 +55,36 @@ public class UserManagementController {
 	
 	@GetMapping(value="api/v1/users/{userId}"	, produces = "application/json; ")
 	public Optional<User> retrieveUserbyId(@PathVariable Long userId) {
+<<<<<<< HEAD
 		Optional<User> user=null;
+=======
+		
+		Optional<User> user=null;
+		//Adding try
+		try {
+			
+>>>>>>> branch 'may20' of https://github.com/harikayeluri/AIGSampleProj
 			 user= userManageService.getUserbyId(userId);	
 			if(!user.isPresent()) {
 			throw new ResponseStatusException(
 					  HttpStatus.NOT_FOUND, "user with the above id not found "
 					);
+<<<<<<< HEAD
 			}
 		
 		
+=======
+		}
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+			
+		}
+>>>>>>> branch 'may20' of https://github.com/harikayeluri/AIGSampleProj
 		return user;
 	} 
 
+<<<<<<< HEAD
 	@GetMapping(value="api/v1/users",produces = "application/json;")
 	public PostResponse retrieveUsers(@RequestParam(value="paging",required=false) String paging,
 			@RequestParam(value="limit", required=false)String limit) {
@@ -76,7 +94,21 @@ public class UserManagementController {
 		if((paging != null && !paging.isEmpty())&&( limit!=null&&!limit.isEmpty())) { 
 			 pageable = PageRequest.of(Integer.parseInt(paging) , Integer.parseInt(limit));
 			pageList= userManageService.getUsers(pageable);
+=======
+	@GetMapping(value="/users",produces = "application/json;")
+	public Page<User> retrieveUsers(@RequestParam int paging,@RequestParam int limit) {
+		Page<User> page = null;
+		try {
+		Pageable pageable = new PageRequest(paging,limit);
+		   
+		page= userManageService.getUsers(pageable);
+		if(page.getNumberOfElements()==0) {
+			throw new ResponseStatusException(
+					  HttpStatus.NOT_FOUND, "page not found"
+					);
+>>>>>>> branch 'may20' of https://github.com/harikayeluri/AIGSampleProj
 		}
+<<<<<<< HEAD
 		else {	
 			
 			pageable = PageRequest.of(0, 10);
@@ -93,6 +125,11 @@ public class UserManagementController {
 					  HttpStatus.NOT_FOUND, "page  not found "
 					);
 			}
+=======
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+>>>>>>> branch 'may20' of https://github.com/harikayeluri/AIGSampleProj
 		
 		return pr;
 	}
@@ -117,5 +154,29 @@ public class UserManagementController {
 		else
 			return "user not found";
 	}
+<<<<<<< HEAD
+=======
+	@PostMapping(path="/users",consumes = "application/json",produces = "application/json;")
+	public ResponseEntity<User> createUser(@RequestBody User user) {
+	
+		
+		if(user.getPassword().equalsIgnoreCase(user.getConfirm())) {
+			try {
+				userManageService.addUser(user);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				
+			}
+	
+			return new ResponseEntity<>( HttpStatus.CREATED);
+		}else {
+			return new ResponseEntity<>( HttpStatus.EXPECTATION_FAILED);
+	}
+	
+	
+		
+	}
+	
+>>>>>>> branch 'may20' of https://github.com/harikayeluri/AIGSampleProj
 
 }
