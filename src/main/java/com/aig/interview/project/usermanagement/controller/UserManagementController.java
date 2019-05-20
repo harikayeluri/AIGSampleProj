@@ -43,7 +43,7 @@ public class UserManagementController {
 		this.userManageService = userManageService;
 	}
 
-	UserManagementService userManageService;
+	UserManagementService userManageService; 
 	
 	
 	 @RequestMapping(value="/home", method = RequestMethod.GET)

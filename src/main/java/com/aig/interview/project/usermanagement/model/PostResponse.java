@@ -25,7 +25,7 @@ public class PostResponse {
 		return userList;
 	}
 	public void setUserList(List<User> list) {
-		this.userList = list;
+		this.userList = list; 
 	}
 
 	

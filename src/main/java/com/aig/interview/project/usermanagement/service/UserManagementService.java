@@ -2,7 +2,7 @@ package com.aig.interview.project.usermanagement.service;
 
 import java.util.Optional;
 
-import org.hibernate.exception.DataException;
+import org.hibernate.exception.DataException; 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
