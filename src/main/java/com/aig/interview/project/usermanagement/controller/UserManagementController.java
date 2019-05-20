@@ -68,6 +68,7 @@ public class UserManagementController {
 		}
 		}
 		catch(SQLException e) {
+			e.printStackTrace();
 			
 		}
 		return user;
@@ -108,7 +109,7 @@ public class UserManagementController {
 			try {
 				userManageService.addUser(user);
 			} catch (SQLException e) {
-				
+				e.printStackTrace();
 				
 			}
 	
