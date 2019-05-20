@@ -45,6 +45,7 @@ public class UserManagementController {
 
 	UserManagementService userManageService;
 	
+	
 	 @RequestMapping(value="/home", method = RequestMethod.GET)
 	public String home() {		
 	return "hello"; 
