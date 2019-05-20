@@ -57,6 +57,7 @@ public class UserManagementController {
 	public Optional<User> retrieveUserbyId(@PathVariable Long userId) {
 		
 		Optional<User> user=null;
+		//Adding try
 		try {
 			
 			 user= userManageService.getUserbyId(userId);	
