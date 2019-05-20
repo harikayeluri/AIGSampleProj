@@ -1,5 +1,6 @@
 package com.aig.interview.project.usermanagement.controller;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -8,6 +9,8 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.catalina.connector.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +34,8 @@ import com.aig.interview.project.usermanagement.service.UserManagementService;
 
 @RestController
 public class UserManagementController {
+
+	
 	@Autowired
 	public UserManagementController(UserManagementService userManageService) {
 		super();
@@ -50,11 +55,18 @@ public class UserManagementController {
 	@GetMapping(value="/users/{userId}"
 	, produces = "application/json; ")
 	public Optional<User> retrieveUserbyId(@PathVariable Long userId) {
-	Optional<User> user= userManageService.getUserbyId(userId);	
-		if(!user.isPresent()) {
+		
+		Optional<User> user=null;
+		try {
+			 user= userManageService.getUserbyId(userId);	
+			if(!user.isPresent()) {
 			throw new ResponseStatusException(
 					  HttpStatus.NOT_FOUND, "user with the above id not found "
 					);
+		}
+		}
+		catch(SQLException e) {
+			
 		}
 		return user;
 	} 
@@ -62,6 +74,7 @@ public class UserManagementController {
 	@GetMapping(value="/users",produces = "application/json;")
 	public Page<User> retrieveUsers(@RequestParam int paging,@RequestParam int limit) {
 		Page<User> page = null;
+		try {
 		Pageable pageable = new PageRequest(paging,limit);
 		   
 		page= userManageService.getUsers(pageable);
@@ -69,6 +82,9 @@ public class UserManagementController {
 			throw new ResponseStatusException(
 					  HttpStatus.NOT_FOUND, "page not found"
 					);
+		}
+		}catch(SQLException e) {
+			
 		}
 		
 		return page;
@@ -85,13 +101,22 @@ public class UserManagementController {
 	@PostMapping(path="/users",consumes = "application/json",produces = "application/json;")
 	public ResponseEntity<User> createUser(@RequestBody User user) {
 	
+		
 		if(user.getPassword().equalsIgnoreCase(user.getConfirm())) {
-			userManageService.addUser(user);
+			try {
+				userManageService.addUser(user);
+			} catch (SQLException e) {
+				
+				
+			}
 	
 			return new ResponseEntity<>( HttpStatus.CREATED);
 		}else {
 			return new ResponseEntity<>( HttpStatus.EXPECTATION_FAILED);
 	}
+	
+	
+		
 	}
 	
 

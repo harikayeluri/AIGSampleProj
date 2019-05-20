@@ -1,5 +1,6 @@
 package com.aig.interview.project.usermanagement.service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,21 +27,21 @@ public class UserManagementService {
 					new User((long) 1002,"Rita","password2")))
 		;*/
 
-	public Optional<User> getUserbyId(Long userId) {
+	public Optional<User> getUserbyId(Long userId) throws SQLException {
 		
 	return userRepo.findById(userId);
 		
 		//return users.stream().filter(s->s.getUUID().equals(userId)).findFirst().get();
 	}
 
-	public Page<User> getUsers(Pageable pageable) {
+	public Page<User> getUsers(Pageable pageable) throws SQLException {
 		
 		return userRepo.findAll(pageable);
 		
 		//return users;
 	}
 
-	public void addUser(User user) {
+	public void addUser(User user)throws SQLException {
 		 userRepo.save(user);
 		// users.add(user) ;
 	}
