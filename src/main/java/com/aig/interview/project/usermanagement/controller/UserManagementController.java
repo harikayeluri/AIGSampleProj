@@ -86,7 +86,7 @@ public class UserManagementController {
 					);
 		}
 		}catch(SQLException e) {
-			
+			e.printStackTrace();
 		}
 		
 		return page;
