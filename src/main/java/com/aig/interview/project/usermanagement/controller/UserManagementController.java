@@ -1,3 +1,4 @@
+
 package com.aig.interview.project.usermanagement.controller;
 
 import java.sql.SQLException;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.aig.interview.project.usermanagement.model.PostResponse;
 import com.aig.interview.project.usermanagement.model.User;
 import com.aig.interview.project.usermanagement.service.UserManagementService;
 
@@ -45,54 +47,68 @@ public class UserManagementController {
 	UserManagementService userManageService;
 	
 	 @RequestMapping(value="/home", method = RequestMethod.GET)
-	public String home() {
-		 System.out.println("hi");
+	public String home() {		
 	return "hello"; 
 	}
 
 
 	
-	@GetMapping(value="/users/{userId}"
-	, produces = "application/json; ")
+	@GetMapping(value="api/v1/users/{userId}"	, produces = "application/json; ")
 	public Optional<User> retrieveUserbyId(@PathVariable Long userId) {
-		
 		Optional<User> user=null;
-		//Adding try
-		try {
-			
 			 user= userManageService.getUserbyId(userId);	
 			if(!user.isPresent()) {
 			throw new ResponseStatusException(
 					  HttpStatus.NOT_FOUND, "user with the above id not found "
 					);
-		}
-		}
-		catch(SQLException e) {
-			e.printStackTrace();
-			
-		}
+			}
+		
+		
 		return user;
 	} 
 
-	@GetMapping(value="/users",produces = "application/json;")
-	public Page<User> retrieveUsers(@RequestParam int paging,@RequestParam int limit) {
-		Page<User> page = null;
-		try {
-		Pageable pageable = new PageRequest(paging,limit);
-		   
-		page= userManageService.getUsers(pageable);
-		if(page.getNumberOfElements()==0) {
+	@GetMapping(value="api/v1/users",produces = "application/json;")
+	public PostResponse retrieveUsers(@RequestParam(value="paging",required=false) String paging,
+			@RequestParam(value="limit", required=false)String limit) {
+		Page<User> pageList = null;
+		PostResponse pr=null;
+		Pageable pageable=null;				
+		if((paging != null && !paging.isEmpty())&&( limit!=null&&!limit.isEmpty())) { 
+			 pageable = PageRequest.of(Integer.parseInt(paging) , Integer.parseInt(limit));
+			pageList= userManageService.getUsers(pageable);
+		}
+		else {	
+			
+			pageable = PageRequest.of(0, 10);
+			pageList= userManageService.getUsers(pageable);
+		}		
+		if(pageList.getNumberOfElements()>0) {
+			pr=new PostResponse();
+		pr.setCount(pageList.getNumberOfElements());
+		pr.setPaging(pageable.getPageNumber());
+		pr.setUserList(pageList.getContent());
+		}
+		if(pageList.getNumberOfElements()==0) {
 			throw new ResponseStatusException(
-					  HttpStatus.NOT_FOUND, "page not found"
+					  HttpStatus.NOT_FOUND, "page  not found "
 					);
-		}
-		}catch(SQLException e) {
-			e.printStackTrace();
-		}
+			}
 		
-		return page;
+		return pr;
 	}
+	 
 	
+	@PostMapping(path="/api/v1/users",consumes = "application/json",produces = "application/json;")
+	public ResponseEntity<User> createUser(@RequestBody User user) {		
+		if(user.getPassword().equalsIgnoreCase(user.getConfirm())) {	
+			userManageService.addUser(user);	
+	
+			return new ResponseEntity<>( HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>( HttpStatus.BAD_REQUEST);
+		}
+		}
 	@ExceptionHandler(ResponseStatusException.class)
 	public String handleSQLException(HttpServletRequest request, Exception ex){
 		//logger.info("SQLException Occured:: URL="+request.getRequestURL());
@@ -101,26 +117,5 @@ public class UserManagementController {
 		else
 			return "user not found";
 	}
-	@PostMapping(path="/users",consumes = "application/json",produces = "application/json;")
-	public ResponseEntity<User> createUser(@RequestBody User user) {
-	
-		
-		if(user.getPassword().equalsIgnoreCase(user.getConfirm())) {
-			try {
-				userManageService.addUser(user);
-			} catch (SQLException e) {
-				e.printStackTrace();
-				
-			}
-	
-			return new ResponseEntity<>( HttpStatus.CREATED);
-		}else {
-			return new ResponseEntity<>( HttpStatus.EXPECTATION_FAILED);
-	}
-	
-	
-		
-	}
-	
 
 }
